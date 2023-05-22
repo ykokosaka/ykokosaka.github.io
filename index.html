@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<!------------------------------------------------------------------------------->
+<!-- The used libraries and their licenses are written at the end of this file -->
+<!------------------------------------------------------------------------------->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exp E Visualizer</title>
+    
+    <!-- Chart.jsのインクルード -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">        
+
+        update_graph = function(){     
+
+            var measures = new Array(7);  // 0, 500, ~, 3000の6点
+            var models = new Array(301);  // 0, 10, 20, ~ , 3000の301点
+
+            // 入力値の取得
+            var k1 = Number(document.getElementById("k1").value);
+            var k2 = Number(document.getElementById("k2").value);
+
+            // モデル値と実測値の代入
+            var N = 3001;
+            var tau = 1000;
+            for (var i = 0; i < N; i+=10){
+                if (i % 500 == 0)
+                  measures[parseInt(i / 500)] = {x:i, y:Number(document.getElementById("eo_" + String(i)).value)};
+                models[parseInt(i / 10)] = {x:i,y:k1 + k2 * Math.exp(-i / tau)};
+            }
+
+            // グラフの描画
+            var ctx = document.getElementById("chart");
+            var mychart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                      {
+                        label: '実測値',
+                        data: measures,
+                        backgroundColor: 'rgba(241, 107, 141, 1)',
+                      },
+                      {
+                        label: 'モデル値',
+                        data: models,
+                        backgroundColor: 'rgba( 31, 167, 165, 1)',
+                      }]
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: '時間 [μs]',
+                            },
+                            ticks: {
+                                max: 3000,
+                                min: 0,
+                                stepSize: 500,
+                                callback: function(value, index, values){
+                                    return  value
+                                }
+                            },
+                        }],
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                                labelString: '電圧値 [V]',
+                            },
+                            ticks: {
+                                max: 5,
+                                min: -5,
+                                stepSize: 1,
+                                callback: function(value, index, values){
+                                    return  value
+                                }
+                            },
+                        }]
+                    }
+                }
+            });
+
+            // 表の描画
+            var table = document.getElementById("table");
+            for (var j = 0; j < 7; j++){
+              var m1 = measures[j]["y"];
+              var m2 = models[j * 50]["y"];
+              table.rows[1].cells[j + 1].innerHTML = m1.toFixed(2);
+              table.rows[2].cells[j + 1].innerHTML = m2.toFixed(2);
+              table.rows[3].cells[j + 1].innerHTML = parseInt((m1 - m2) * 1000);
+            }
+        }
+
+        window.onload = function load() {
+          document.getElementById('k1').addEventListener('change', function (event){
+            update_graph();
+          });
+          document.getElementById('k2').addEventListener('change', function (event){
+            update_graph();
+          });
+          document.getElementById('eo_0').addEventListener('change', function (event){
+            update_graph();
+          });
+          document.getElementById('eo_500').addEventListener('change', function (event){
+            update_graph();
+          });
+          document.getElementById('eo_1000').addEventListener('change', function (event){
+            update_graph();
+          });
+          document.getElementById('eo_1500').addEventListener('change', function (event){
+            update_graph();
+          });
+          document.getElementById('eo_2000').addEventListener('change', function (event){
+            update_graph();
+          });
+          document.getElementById('eo_2500').addEventListener('change', function (event){
+            update_graph();
+          });
+          document.getElementById('eo_3000').addEventListener('change', function (event){
+            update_graph();
+          });
+          update_graph(); 
+        }
+    </script>
+</head>
+
+
+
+<body>
+    <div class="input-container">
+      <table>
+        <caption>測定、計算した値をここに入力</caption>
+        <tr>
+          <td>k1</td>
+          <td>:</td>
+          <td><input type="text" value="4.2" id="k1"></td>
+        </tr>
+        <tr>
+          <td>k2</td>
+          <td>:</td>
+          <td><input type="text" value="-6.8" id="k2"></td>
+        </tr>
+        <tr>
+          <td>eo(0)</td>
+          <td>:</td>
+          <td><input type="text" value="-4" id="eo_0"></td>
+        </tr>
+        <tr>
+          <td>eo(500)</td>
+          <td>:</td>
+          <td><input type="text" value="-4" id="eo_500"></td>
+        </tr>
+        <tr>
+          <td>eo(1000)</td>
+          <td>:</td>
+          <td><input type="text" value="-4" id="eo_1000"></td>
+        </tr>
+        <tr>
+          <td>eo(1500)</td>
+          <td>:</td>
+          <td><input type="text" value="-4" id="eo_1500"></td>
+        </tr>
+        <tr>
+          <td>eo(2000)</td>
+          <td>:</td>
+          <td><input type="text" value="-4" id="eo_2000"></td>
+        </tr>
+        <tr>
+          <td>eo(2500)</td>
+          <td>:</td>
+          <td><input type="text" value="-4" id="eo_2500"></td>
+        </tr>
+        <tr>
+          <td>eo(3000)</td>
+          <td>:</td>
+          <td><input type="text" value="-4" id="eo_3000"></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="graph-container">
+      <canvas id="chart" width="300" height="200"></canvas>
+    </div>
+
+    <div class="table-container">
+    <table id="table">
+      <caption>表1　各時刻における実測値とモデル値</caption>
+      <tr>
+        <td>時刻 [μs]</td>
+        <td>0</td>
+        <td>500</td>
+        <td>1000</td>
+        <td>1500</td>
+        <td>2000</td>
+        <td>2500</td>
+        <td>3000</td>
+      </tr>
+      <tr>
+        <td>実測値 [V]</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+      </tr>
+      <tr>
+        <td>モデル値 [V]</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+      </tr>
+      <tr>
+        <td>誤差 [mV]</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+        <td>-4</td>
+      </tr>
+    </table>
+  </div>
+
+</body>
+
+
+
+<style>
+  /* 全体のスタイル */
+  body{   
+      margin: 0; /*htmlのデフォルト設定を消す*/
+  }
+
+  .input-container{
+      width: 95%;
+      max-width: 600px;
+      margin: 5vh auto 5vh auto;
+  }
+  .graph-container {
+      width: 95%;
+      max-width: 500px;
+      margin: 5vh auto 5vh auto;
+  }
+  .table-container {
+      width: 95%;
+      max-width: 600px; /* padding * 2 + width が全体の幅 */
+      margin: 5vh auto 5vh auto;
+  }
+
+  .input-container table{
+    margin: auto;
+  }  
+  .input-container th, .input-container td{
+    padding: 0.5em;
+    min-width: 40px;
+    text-align: center;
+    font-size: small;
+  }  
+
+  .table-container table{
+    margin: auto;
+    border-collapse: collapse;
+  }
+  .table-container th, .table-container td{
+    border: solid 1px black;
+    padding: 0.5em;
+    min-width: 10%;
+    text-align: center;
+    font-size: small;
+  }
+
+
+  /* 480にかえる */
+  @media(max-width:500px) {
+    .table-container th, .table-container td{
+      font-size: 8px; 
+    } 
+    .input-container th, .input-container td{
+      font-size: 12px; 
+    } 
+  }
+
+</style>
+
+<!------------------------------------------------------------->
+<!----------------------- Chart.js ---------------------------->
+<!------------------------------------------------------------->
+<!--
+URL : https://github.com/chartjs/Chart.js
+用途 : グラフの描画
+ライセンス : MIT License
+
+原文 : 
+The MIT License (MIT)
+
+Copyright (c) 2014-2022 Chart.js Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+
+</html> 
